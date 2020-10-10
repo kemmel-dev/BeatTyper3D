@@ -10,13 +10,32 @@ public class BeatSpawner : MonoBehaviour
     public float beatTempo;
     public static float beatDuration;
 
-    private char[] keys = KeyboardManager.keys;
+    public static List<GameObject> beats = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
     {
         beatDuration = beatTempo / 60f;
         SpawnBeats();
+    }
+
+    private void LateUpdate()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y - beatDuration * Time.deltaTime, transform.position.z);
+        
+        if (beats.Count > 1)
+        {
+            if (beats[0] && beats[1])
+            {
+                Vector3 firstBeatPos = beats[0].transform.position;
+                Vector3 secondBeatPos = beats[1].transform.position;
+                firstBeatPos.y = 0;
+                secondBeatPos.y = 0;
+                Connector.ConnectPositions(firstBeatPos, secondBeatPos);
+            }
+            return;
+        }
+        Connector.Disable();
     }
 
     public float GetBeatduration()
@@ -27,7 +46,7 @@ public class BeatSpawner : MonoBehaviour
     public void SpawnBeats()
     {
 
-        float yPos = 17 + beatDuration / 2;
+        float yPos = 17 + beatDuration / 4;
 
         for (int i = 0; i < 4; i++)
         {
@@ -176,12 +195,7 @@ public class BeatSpawner : MonoBehaviour
     {
         KeyTile keyTile = KeyboardManager.keyTiles[key];
         Vector3 newPos = new Vector3(keyTile.transform.position.x, yPos, keyTile.transform.position.z);
-        Instantiate(beatPrefab, newPos, Quaternion.identity, this.transform);
+        beats.Add(Instantiate(beatPrefab, newPos, Quaternion.identity, this.transform));
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        transform.position = new Vector3(transform.position.x, transform.position.y - beatDuration * Time.deltaTime, transform.position.z);
-    }
 }

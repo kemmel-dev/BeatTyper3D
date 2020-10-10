@@ -20,6 +20,8 @@ public class KeyTile : MonoBehaviour
 
     private Dictionary<GameObject, BeatCircle> attachedBeatCircles = new Dictionary<GameObject, BeatCircle>();
 
+    private static bool firstBeat;
+
     private void OnCollisionEnter(Collision other)
     {
         MissBeat(other.gameObject);
@@ -27,14 +29,32 @@ public class KeyTile : MonoBehaviour
 
     private void Update()
     {
+        GameObject nextBeat = BeatSpawner.beats[0];
+        if (nextBeat)
+        {
+            Vector3 nextBeatPos = nextBeat.transform.position;
+            nextBeatPos.y = 0;
+            if (transform.position == nextBeatPos)
+            {
+                if (attachedBeatCircles.ContainsKey(nextBeat))
+                {
+                    attachedBeatCircles[nextBeat].SetActive();
+                }
+            }
+        }
+
         GameObject beatPresent = CheckForBeatUndiscovered();
 
         if (beatPresent)
         {
+            if (!firstBeat)
+            {
+                Connector.Enable();
+                firstBeat = true;
+            }
             beatPresent.layer = discovered;
             BeatCircle beatCircle = Instantiate(beatCirclePrefab, this.transform).GetComponent<BeatCircle>();
             beatCircle.SetTarget(beatPresent.transform);
-
             attachedBeatCircles.Add(beatPresent, beatCircle);
         }
 
@@ -48,7 +68,6 @@ public class KeyTile : MonoBehaviour
                     HitBeat(beatPresent);
                     return;
                 }
-                MissBeat(beatPresent);
             }
             MissBeat(null);
             return;
@@ -74,6 +93,7 @@ public class KeyTile : MonoBehaviour
         Destroy(beatPresent);
         Destroy(attachedBeatCircle.gameObject);
         FeedbackManager.Hit();
+        BeatSpawner.beats.RemoveAt(0);
     }
 
     private void MissBeat(GameObject beatPresent)
@@ -86,6 +106,7 @@ public class KeyTile : MonoBehaviour
                 Destroy(attachedBeatCircle.gameObject);
             }
             Destroy(beatPresent);
+            BeatSpawner.beats.RemoveAt(0);
         }
         FeedbackManager.Miss();
     }

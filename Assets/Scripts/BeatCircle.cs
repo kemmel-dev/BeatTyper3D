@@ -22,11 +22,17 @@ public class BeatCircle : MonoBehaviour
     public Color32 wrong, ok, good;
     private float okRadius;
 
+    public byte alphaActive, alphaInactive;
+    private byte currentAlpha;
+
     // Start is called before the first frame update
     void Start()
     {
         circleRenderer = GetComponent<CircleRenderer>();
-        circleRenderer.SetColor(wrong);
+        Color color = wrong;
+        currentAlpha = alphaInactive;
+        color.a = currentAlpha;
+        circleRenderer.SetColor(color);
         deltaRadius = maxRadius - minRadius;
         halfRadius = deltaRadius / 2;
         currentRadius = maxRadius;
@@ -39,7 +45,10 @@ public class BeatCircle : MonoBehaviour
         float currentDistanceToNote = Vector3.Distance(transform.position, target.position);
         currentRadius = minRadius + (currentDistanceToNote / maxDistanceToNote) * deltaRadius;
         circleRenderer.radius = currentRadius;
-        circleRenderer.SetColor(GetColor(currentRadius));
+
+        Color32 color = GetColor(currentRadius);
+        color.a = currentAlpha;
+        circleRenderer.SetColor(color);
     }
 
     private Color32 GetColor(float radius)
@@ -52,6 +61,11 @@ public class BeatCircle : MonoBehaviour
         }
         colorRatio = (radius - okRadius) / halfRadius;
         return Color32.Lerp(ok, wrong, colorRatio);
+    }
+
+    public void SetActive()
+    {
+        currentAlpha = alphaActive;
     }
 
     public void SetTarget(Transform target)

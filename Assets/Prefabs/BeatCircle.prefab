@@ -204,7 +204,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minRadius: 1
   maxRadius: 5
-  maxDistanceToNote: 2
   currentDistanceToNote: 0
   wrong:
     serializedVersion: 2
@@ -215,3 +214,5 @@ MonoBehaviour:
   good:
     serializedVersion: 2
     rgba: 4278255375
+  alphaActive: 255
+  alphaInactive: 50
