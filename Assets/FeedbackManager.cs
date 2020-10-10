@@ -12,10 +12,9 @@ public class FeedbackManager : MonoBehaviour
     public static FeedbackManager current;
 
     private static AutoTimer timer;
-    private static MeshRenderer meshRenderer;
     private static TextMeshPro textMeshPro;
 
-    private static Color defaultColor = Color.black;
+    private static Color defaultColor = Color.white;
     private static Color correctColor = Color.green;
     private static Color wrongColor = Color.red;
 
@@ -28,8 +27,6 @@ public class FeedbackManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material.color = defaultColor;
         textMeshPro = GetComponentInChildren<TextMeshPro>();
         textMeshPro.text = ("Streak: " + streak);
 
@@ -42,7 +39,7 @@ public class FeedbackManager : MonoBehaviour
         {
             if (timer.IsReached(Time.time))
             {
-                meshRenderer.material.color = defaultColor;
+                textMeshPro.color = defaultColor;
             }
         }
         textMeshPro.text = ("Streak: " + streak + "\nBest: " + best);
@@ -52,7 +49,7 @@ public class FeedbackManager : MonoBehaviour
     {
 
         timer = new AutoTimer(Time.time + timeCorrect);
-        meshRenderer.material.color = correctColor;
+        textMeshPro.color = correctColor;
         streak++;
     }
 
@@ -60,7 +57,7 @@ public class FeedbackManager : MonoBehaviour
     {
 
         timer = new AutoTimer(Time.time + timeWrong);
-        meshRenderer.material.color = wrongColor;
+        textMeshPro.color = wrongColor;
         if (streak > best)
         {
             best = streak;

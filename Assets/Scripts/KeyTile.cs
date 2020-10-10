@@ -4,133 +4,133 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 public class KeyTile : MonoBehaviour
 {
+    public GameObject beatCirclePrefab;
 
-    private TextMeshPro textMeshPro;
-    private Color32 color;
     private KeyCode keyCode;
-    private LayerMask noteMask;
-    private MeshRenderer meshRenderer;
 
-    public float hitRange;
-    public float maxRange = 100;
+    public Color32 activeColorTile, inactiveColorTile, activeColorText, inactiveColorText;
 
-    public byte opacityInactive, opacityActive;
+    private SpriteRenderer spriteRenderer;
+    private TextMeshPro textMeshPro;
 
-    public void Initialise(char character, Color32 color)
+    private LayerMask discovered, undiscovered;
+
+    private Dictionary<GameObject, BeatCircle> attachedBeatCircles = new Dictionary<GameObject, BeatCircle>();
+
+    private void OnCollisionEnter(Collision other)
     {
-        textMeshPro = GetComponentInChildren<TextMeshPro>();
-        meshRenderer = GetComponent<MeshRenderer>();
-        this.color = color;
-        meshRenderer.material.color = color;
-        keyCode = GetKeyCodeFromCharacter(character);
-        SetText(character.ToString());
-        hitRange = 5f;
-        noteMask = LayerMask.GetMask("NoteLayer");
-
-        MakeInactive();
+        MissBeat(other.gameObject);
     }
 
     private void Update()
     {
-        bool keyPressed = Input.GetKeyDown(keyCode);
-        Note note = CheckForNoteInRange(hitRange);
-        if (note)
+        GameObject beatPresent = CheckForBeatUndiscovered();
+
+        if (beatPresent)
         {
-            float distance = Vector3.Distance(transform.position, note.transform.position);
+            beatPresent.layer = discovered;
+            BeatCircle beatCircle = Instantiate(beatCirclePrefab, this.transform).GetComponent<BeatCircle>();
+            beatCircle.SetTarget(beatPresent.transform);
 
-            note.MakeActive();
+            attachedBeatCircles.Add(beatPresent, beatCircle);
+        }
 
-            //Debug.DrawRay(transform.position, Vector3.up, UnityEngine.Color.yellow, 2);
-            //Debug.DrawLine(transform.position, note.transform.position, UnityEngine.Color.red, 2);
-            
-            if (keyPressed)
+        if (Input.GetKeyDown(keyCode))
+        {
+            beatPresent = CheckForBeatDiscovered();
+            if (beatPresent)
             {
-                note.Hit();
+                if (Vector3.Distance(beatPresent.transform.position, this.transform.position) < BeatCircle.maxDistanceToNote / 2)
+                {
+                    HitBeat(beatPresent);
+                    return;
+                }
+                MissBeat(beatPresent);
             }
-            MakeInactive();
+            MissBeat(null);
+            return;
+        }
+        if (Input.GetKey(keyCode))
+        {
+            spriteRenderer.material.color = activeColorTile;
+            textMeshPro.color = activeColorText;
+            return;
+        }
+        else if (Input.GetKeyUp(keyCode))
+        {
+            spriteRenderer.material.color = inactiveColorTile;
+            textMeshPro.color = inactiveColorText;
             return;
         }
 
-        if (keyPressed)
-        {
-            note = CheckForNoteInRange(maxRange);
-            if (note)
-            {
-                note.Miss();
-                MakeInactive();
-            }
-        }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void HitBeat(GameObject beatPresent)
     {
-        Note collidingNote = collision.gameObject.GetComponent<Note>();
-        if (collidingNote)
-        {
-            collidingNote.Miss();
-            MakeInactive();
-        }
+        BeatCircle attachedBeatCircle = attachedBeatCircles[beatPresent];
+        Destroy(beatPresent);
+        Destroy(attachedBeatCircle.gameObject);
+        FeedbackManager.Hit();
     }
 
-    public Note CheckForNoteInRange(float range)
+    private void MissBeat(GameObject beatPresent)
+    {
+        if (beatPresent)
+        {
+            BeatCircle attachedBeatCircle = attachedBeatCircles[beatPresent];
+            if (attachedBeatCircle)
+            {
+                Destroy(attachedBeatCircle.gameObject);
+            }
+            Destroy(beatPresent);
+        }
+        FeedbackManager.Miss();
+    }
+
+    public GameObject CheckForBeatDiscovered()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.up, out hit, range, noteMask))
+        if (Physics.Raycast(new Ray(transform.position, Vector3.up), out hit, 10, LayerMask.GetMask("Discovered")))
         {
-            Note note = hit.collider.GetComponent<Note>();
-            if (note)
-            {
-                return note;
-            }
+            return hit.collider.gameObject;
         }
         return null;
     }
 
-    public void MakeActive()
+    public GameObject CheckForBeatUndiscovered()
     {
-        color.a = opacityActive;
-        meshRenderer.material.color = color;
-    }
-
-    public void MakeInactive()
-    {
-        color.a = opacityInactive;
-        meshRenderer.material.color = color;
-    }
-
-
-    public void SetText(string text)
-    {
-        textMeshPro.text = text;
-    }
-
-    public void SetKeyCode(KeyCode keyCode)
-    {
-        this.keyCode = keyCode;
-    }
-
-    public Color32 Color
-    {
-        get
+        RaycastHit hit;
+        if (Physics.Raycast(new Ray(transform.position, Vector3.up), out hit, 10, undiscovered))
         {
-            return color;
+            return hit.collider.gameObject;
         }
-        set
-        {
-            color = value;
-        }
+        return null;
     }
 
-
-    private KeyCode GetKeyCodeFromCharacter(char character)
+    // Start is called before the first frame update
+    public void Initialise(char key)
     {
-        int charNo = (int)character + (97 - 65);
-        return (KeyCode)charNo;
+        this.gameObject.name = key.ToString();
+        keyCode = GetKeyCode(key);
+        KeyboardManager.AddKeyTile(key, this);
+
+        textMeshPro = transform.Find("Text").GetComponent<TextMeshPro>();
+        textMeshPro.text = key.ToString();
+        textMeshPro.color = inactiveColorText;
+
+        spriteRenderer = transform.Find("Tile").GetComponent<SpriteRenderer>();
+        spriteRenderer.material.color = inactiveColorTile;
+
+        discovered = LayerMask.NameToLayer("Discovered");
+        undiscovered = LayerMask.GetMask("Undiscovered");
+
     }
 
+    public KeyCode GetKeyCode(char key)
+    {
+        return (KeyCode) (key + 32);
+    }
 }
-
