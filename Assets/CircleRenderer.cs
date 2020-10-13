@@ -31,7 +31,8 @@ public class CircleRenderer : MonoBehaviour
 
     public void SetColor(Color32 color)
     {
-        lineRenderer.SetColors(color, color);
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
     }
 
     private void DrawCircle()

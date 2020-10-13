@@ -23,15 +23,17 @@ public class BeatSpawner : MonoBehaviour
     {
         transform.position = new Vector3(transform.position.x, transform.position.y - beatDuration * Time.deltaTime, transform.position.z);
         
-        if (beats.Count > 1)
+        if (beats.Count > 2)
         {
-            if (beats[0] && beats[1])
+            if (beats[0] && beats[1] && beats[2])
             {
                 Vector3 firstBeatPos = beats[0].transform.position;
                 Vector3 secondBeatPos = beats[1].transform.position;
+                Vector3 thirdBeatPos = beats[2].transform.position;
                 firstBeatPos.y = 0;
                 secondBeatPos.y = 0;
-                Connector.ConnectPositions(firstBeatPos, secondBeatPos);
+                thirdBeatPos.y = 0;
+                Connector.ConnectPositions(firstBeatPos, secondBeatPos, thirdBeatPos);
             }
             return;
         }
@@ -46,7 +48,7 @@ public class BeatSpawner : MonoBehaviour
     public void SpawnBeats()
     {
 
-        float yPos = 17 + beatDuration / 4;
+        float yPos = 16;
 
         for (int i = 0; i < 4; i++)
         {
