@@ -7,69 +7,56 @@ using UnityEngine;
 
 public class KeyTile : MonoBehaviour
 {
+
     public GameObject beatCirclePrefab;
-
-    private KeyCode keyCode;
-
     public Color32 activeColorTile, inactiveColorTile, activeColorText, inactiveColorText;
 
+
+    private KeyCode keyCode;
+    private LayerMask discoveredMask, undiscoveredMask, discoveredLayer;
     private SpriteRenderer spriteRenderer;
     private TextMeshPro textMeshPro;
 
-    private LayerMask discovered, undiscovered;
-
-    private Dictionary<GameObject, BeatCircle> attachedBeatCircles = new Dictionary<GameObject, BeatCircle>();
-
-    private static bool firstBeat;
-
-    private void OnCollisionEnter(Collision other)
-    {
-        MissBeat(other.gameObject);
-    }
+    private static bool firstBeat = true;
 
     private void Update()
     {
-        GameObject nextBeat = BeatSpawner.beats[0];
+        Beat nextBeat = BeatManager.GetNextBeat();
         if (nextBeat)
         {
-            Vector3 nextBeatPos = nextBeat.transform.position;
-            nextBeatPos.y = 0;
-            if (transform.position == nextBeatPos)
+            BeatCircle attachedBeatCircle = nextBeat.GetBeatCircle();
+            if (attachedBeatCircle)
             {
-                if (attachedBeatCircles.ContainsKey(nextBeat))
-                {
-                    attachedBeatCircles[nextBeat].SetActive();
-                }
+                attachedBeatCircle.SetActive();
             }
         }
 
-        GameObject beatPresent = CheckForBeatUndiscovered();
-
+        Beat beatPresent = CheckForBeat(false);
         if (beatPresent)
         {
-            if (!firstBeat)
+            if (firstBeat)
             {
                 Connector.Enable();
-                firstBeat = true;
+                firstBeat = false;
             }
-            beatPresent.layer = discovered;
+            beatPresent.gameObject.layer = discoveredLayer;
             BeatCircle beatCircle = Instantiate(beatCirclePrefab, this.transform).GetComponent<BeatCircle>();
             beatCircle.SetTarget(beatPresent.transform);
-            attachedBeatCircles.Add(beatPresent, beatCircle);
+            beatPresent.AttachBeatCircle(beatCircle);
         }
 
         if (Input.GetKeyDown(keyCode))
         {
-            beatPresent = CheckForBeatDiscovered();
+            beatPresent = CheckForBeat(true);
             if (beatPresent)
             {
-                if (Vector3.Distance(beatPresent.transform.position, this.transform.position) < BeatCircle.maxDistanceToNote / 2)
+                if (Vector3.Distance(beatPresent.transform.position, this.transform.position) < .5f)
                 {
-                    HitBeat(beatPresent);
+                    BeatManager.HitBeat();
                     return;
                 }
             }
-            MissBeat(null);
+            BeatManager.MissBeat(false);
             return;
         }
         if (Input.GetKey(keyCode))
@@ -87,46 +74,29 @@ public class KeyTile : MonoBehaviour
 
     }
 
-    private void HitBeat(GameObject beatPresent)
+    public Beat CheckForBeat(bool discovered)
     {
-        BeatCircle attachedBeatCircle = attachedBeatCircles[beatPresent];
-        Destroy(beatPresent);
-        Destroy(attachedBeatCircle.gameObject);
-        FeedbackManager.Hit();
-        BeatSpawner.beats.RemoveAt(0);
-    }
+        RaycastHit hit;
 
-    private void MissBeat(GameObject beatPresent)
-    {
-        if (beatPresent)
+        if (discovered)
         {
-            BeatCircle attachedBeatCircle = attachedBeatCircles[beatPresent];
-            if (attachedBeatCircle)
+            Beat nextBeat = BeatManager.GetNextBeat();
+            if (nextBeat.transform.position.x == transform.position.x)
             {
-                Destroy(attachedBeatCircle.gameObject);
+                if (nextBeat.transform.position.z == transform.position.z)
+                {
+                    return nextBeat;
+                }
             }
-            Destroy(beatPresent);
-            BeatSpawner.beats.RemoveAt(0);
+            return null;
         }
-        FeedbackManager.Miss();
-    }
-
-    public GameObject CheckForBeatDiscovered()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(new Ray(transform.position, Vector3.up), out hit, 10, LayerMask.GetMask("Discovered")))
+        else
         {
-            return hit.collider.gameObject;
-        }
-        return null;
-    }
-
-    public GameObject CheckForBeatUndiscovered()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(new Ray(transform.position, Vector3.up), out hit, 10, undiscovered))
-        {
-            return hit.collider.gameObject;
+            if (Physics.Raycast(new Ray(transform.position, Vector3.up), out hit, 10f, undiscoveredMask))
+            {
+                Beat hitBeat = hit.collider.GetComponent<Beat>();
+                return hitBeat;
+            }
         }
         return null;
     }
@@ -145,8 +115,9 @@ public class KeyTile : MonoBehaviour
         spriteRenderer = transform.Find("Tile").GetComponent<SpriteRenderer>();
         spriteRenderer.material.color = inactiveColorTile;
 
-        discovered = LayerMask.NameToLayer("Discovered");
-        undiscovered = LayerMask.GetMask("Undiscovered");
+        discoveredLayer = LayerMask.NameToLayer("Discovered");
+        discoveredMask = LayerMask.GetMask("Discovered");
+        undiscoveredMask = LayerMask.GetMask("Undiscovered");
 
     }
 

@@ -129,7 +129,16 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.23863983
+        value: 0.25
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.25
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -190,6 +199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resolution: 45
   radius: 5
+  width: 0.25
 --- !u!114 &2962718925795970532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,17 +212,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15009ad8bda75c84e93443106fcb7ed9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minRadius: 1
+  minRadius: 1.75
   maxRadius: 5
-  currentDistanceToNote: 0
   wrong:
     serializedVersion: 2
     rgba: 4278190335
   ok:
     serializedVersion: 2
-    rgba: 4278231807
+    rgba: 4278213375
   good:
     serializedVersion: 2
     rgba: 4278255375
   alphaActive: 255
-  alphaInactive: 50
+  alphaInactive: 75

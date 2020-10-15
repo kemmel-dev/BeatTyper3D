@@ -12,6 +12,8 @@ public class CircleRenderer : MonoBehaviour
     public int resolution = 50;
     public float radius = 5;
 
+    public float width = .25f;
+
     private float angleStep;
 
     // Start is called before the first frame update
@@ -21,6 +23,7 @@ public class CircleRenderer : MonoBehaviour
         lineRenderer.positionCount = resolution + 2;
         angleStep = (360 / resolution);
         DrawCircle();
+        SetWidth(width);
     }
 
     // Update is called once per frame
@@ -33,6 +36,12 @@ public class CircleRenderer : MonoBehaviour
     {
         lineRenderer.startColor = color;
         lineRenderer.endColor = color;
+    }
+
+    public void SetWidth(float width)
+    {
+        lineRenderer.startWidth = width;
+        lineRenderer.endWidth = width;
     }
 
     private void DrawCircle()

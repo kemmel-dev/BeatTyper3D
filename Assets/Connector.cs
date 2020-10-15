@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
@@ -26,20 +27,18 @@ public class Connector : MonoBehaviour
         Disable();
     }
 
-    public static void Connect(Transform a, Transform b, Transform c)
+    public static void Connect(Beat a, Beat b)
     {
-        lrOne.SetPosition(0, a.position);
-        lrOne.SetPosition(1, b.position);
-        lrTwo.SetPosition(0, b.position);
-        lrTwo.SetPosition(1, c.position);
+        lrOne.SetPosition(0, a.GetKeyTilePosition());
+        lrOne.SetPosition(1, b.GetKeyTilePosition());
     }
 
-    public static void ConnectPositions(Vector3 a, Vector3 b, Vector3 c)
+    public static void Connect(Beat a, Beat b, Beat c)
     {
-        lrOne.SetPosition(0, thisPos + a);
-        lrOne.SetPosition(1, thisPos + b);
-        lrTwo.SetPosition(0, thisPos + b);
-        lrTwo.SetPosition(1, thisPos + c);
+        lrOne.SetPosition(0, a.GetKeyTilePosition());
+        lrOne.SetPosition(1, b.GetKeyTilePosition());
+        lrTwo.SetPosition(0, b.GetKeyTilePosition());
+        lrTwo.SetPosition(1, c.GetKeyTilePosition());
     }
 
     public static void Enable()
@@ -48,9 +47,42 @@ public class Connector : MonoBehaviour
         lrTwo.enabled = true;
     }
 
+    public static void Enable(int lineRendererNumber)
+    {
+        switch (lineRendererNumber)
+        {
+            case 1:
+                lrOne.enabled = true;
+                break;
+            case 2:
+                lrTwo.enabled = true;
+                break;
+            default:
+                throw new ArgumentException("Error: Specify which line renderer to disable (1 or 2)");
+
+        }
+    }
+
     public static void Disable()
     {
         lrOne.enabled = false;
         lrTwo.enabled = false;
     }
+
+    public static void Disable(int lineRendererNumber)
+    {
+        switch(lineRendererNumber)
+        {
+            case 1:
+                lrOne.enabled = false;
+                break;
+            case 2:
+                lrTwo.enabled = false;
+                break;
+            default:
+                throw new ArgumentException("Error: Specify which line renderer to disable (1 or 2)");
+
+        }
+    }
+
 }

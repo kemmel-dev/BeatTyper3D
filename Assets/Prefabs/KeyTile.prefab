@@ -300,16 +300,16 @@ MonoBehaviour:
   beatCirclePrefab: {fileID: 4079271065136143925, guid: b89bcc13bb5979742828963a67a65a6b, type: 3}
   activeColorTile:
     serializedVersion: 2
-    rgba: 4194340863
+    rgba: 4278241791
   inactiveColorTile:
     serializedVersion: 2
-    rgba: 1275105279
+    rgba: 4294967295
   activeColorText:
     serializedVersion: 2
     rgba: 4278190080
   inactiveColorText:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4278190080
 --- !u!65 &1886184514419960309
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -318,7 +318,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6299491237146654027}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1.5, z: 0.5}

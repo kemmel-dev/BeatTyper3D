@@ -12,7 +12,6 @@ public class BeatCircle : MonoBehaviour
     private float deltaRadius, halfRadius;
 
     public static float maxDistanceToNote = 4f;
-    public float currentDistanceToNote;
 
     private float currentRadius;
 
