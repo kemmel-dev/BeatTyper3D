@@ -17,7 +17,7 @@ public class CircleRenderer : MonoBehaviour
     private float angleStep;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = resolution + 2;
@@ -42,6 +42,16 @@ public class CircleRenderer : MonoBehaviour
     {
         lineRenderer.startWidth = width;
         lineRenderer.endWidth = width;
+    }
+
+    public void Show()
+    {
+        lineRenderer.enabled = true;
+    }
+
+    public void Hide()
+    {
+        lineRenderer.enabled = false;
     }
 
     private void DrawCircle()

@@ -8,6 +8,10 @@ public class BeatManager : MonoBehaviour
 
     private static List<Beat> beats = new List<Beat>();
 
+    private void Start()
+    {
+    }
+
     private void Update()
     {
         Beat nextBeat = GetBeat(0);
@@ -16,15 +20,27 @@ public class BeatManager : MonoBehaviour
 
         if (nextBeat)
         {
-            if (nextBeat.transform.position.y <= 0f)
+            if (nextBeat.GetKeyTile())
+            {
+                nextBeat.GetKeyTile().Show();
+            }
+            if (nextBeat.transform.position.y <=  - BeatSpawner.beatHitDistance / 2)
             {
                 MissBeat(true);
                 return;
             }
             if (secondBeat)
             {
+                if (secondBeat.GetKeyTile())
+                {
+                    secondBeat.GetKeyTile().Show();
+                }
                 if (thirdBeat)
                 {
+                    if (thirdBeat.GetKeyTile())
+                    {
+                        thirdBeat.GetKeyTile().Show();
+                    }
                     Connector.Connect(nextBeat, secondBeat, thirdBeat);
                     return;
                 }
@@ -48,13 +64,16 @@ public class BeatManager : MonoBehaviour
     }
 
 
-    public static void HitBeat()
+    public static void HitBeat(float distanceToBeat)
     {
         Beat nextBeat = GetNextBeat();
+        nextBeat.GetKeyTile().Hide();
+        bool late = nextBeat.transform.position.y < - BeatSpawner.beatHitDistance / 4;
+
         Destroy(nextBeat.GetBeatCircle().gameObject);
         Destroy(nextBeat.gameObject);
 
-        FeedbackManager.Hit();
+        FeedbackManager.Hit(distanceToBeat, late);
         RemoveFirstBeat();
     }
 
@@ -62,7 +81,9 @@ public class BeatManager : MonoBehaviour
     {
         if (beatPresent)
         {
+
             Beat nextBeat = GetNextBeat();
+            nextBeat.GetKeyTile().Hide();
             Destroy(nextBeat.GetBeatCircle().gameObject);
             Destroy(nextBeat.gameObject);
             RemoveFirstBeat();
@@ -95,5 +116,10 @@ public class BeatManager : MonoBehaviour
     public static void RemoveFirstBeat()
     {
         beats.RemoveAt(0);
+    }
+
+    public static void Reset()
+    {
+        beats = new List<Beat>();
     }
 }

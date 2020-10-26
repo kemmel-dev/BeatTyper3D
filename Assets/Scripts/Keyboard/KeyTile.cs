@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class KeyTile : MonoBehaviour
 {
@@ -18,6 +20,8 @@ public class KeyTile : MonoBehaviour
     private TextMeshPro textMeshPro;
 
     private static bool firstBeat = true;
+
+    private CircleRenderer circle;
 
     private void Update()
     {
@@ -43,6 +47,7 @@ public class KeyTile : MonoBehaviour
             BeatCircle beatCircle = Instantiate(beatCirclePrefab, this.transform).GetComponent<BeatCircle>();
             beatCircle.SetTarget(beatPresent.transform);
             beatPresent.AttachBeatCircle(beatCircle);
+            beatPresent.AttachKeyTile(this);
         }
 
         if (Input.GetKeyDown(keyCode))
@@ -50,28 +55,44 @@ public class KeyTile : MonoBehaviour
             beatPresent = CheckForBeat(true);
             if (beatPresent)
             {
-                if (Vector3.Distance(beatPresent.transform.position, this.transform.position) < .5f)
+                float distanceToBeat = Vector3.Distance(beatPresent.transform.position, this.transform.position);
+                if (distanceToBeat < BeatSpawner.beatHitDistance * 1.5f)
                 {
-                    BeatManager.HitBeat();
+                    BeatManager.HitBeat(distanceToBeat);
                     return;
                 }
             }
             BeatManager.MissBeat(false);
-            return;
         }
         if (Input.GetKey(keyCode))
         {
+            spriteRenderer.enabled = true;
+            textMeshPro.enabled = true;
             spriteRenderer.material.color = activeColorTile;
             textMeshPro.color = activeColorText;
-            return;
         }
         else if (Input.GetKeyUp(keyCode))
         {
+            spriteRenderer.enabled = false;
+            textMeshPro.enabled = false;
             spriteRenderer.material.color = inactiveColorTile;
             textMeshPro.color = inactiveColorText;
-            return;
         }
 
+    }
+
+    public void Show()
+    {
+        spriteRenderer.enabled = true;
+        textMeshPro.enabled = true;
+        circle.Show();
+    }
+
+    public void Hide()
+    {
+        spriteRenderer.enabled = false;
+        textMeshPro.enabled = false;
+        circle.Hide();
     }
 
     public Beat CheckForBeat(bool discovered)
@@ -104,6 +125,7 @@ public class KeyTile : MonoBehaviour
     // Start is called before the first frame update
     public void Initialise(char key)
     {
+        circle = transform.Find("Circle").GetComponent<CircleRenderer>();
         this.gameObject.name = key.ToString();
         keyCode = GetKeyCode(key);
         KeyboardManager.AddKeyTile(key, this);
@@ -119,6 +141,7 @@ public class KeyTile : MonoBehaviour
         discoveredMask = LayerMask.GetMask("Discovered");
         undiscoveredMask = LayerMask.GetMask("Undiscovered");
 
+        Hide();
     }
 
     public KeyCode GetKeyCode(char key)

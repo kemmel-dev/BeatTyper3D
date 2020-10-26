@@ -11,10 +11,22 @@ public class KeyboardManager : MonoBehaviour
 
     public static KeyboardManager instance;
 
-    public static Dictionary<char, KeyTile> keyTiles = new Dictionary<char, KeyTile>();
+    public static Dictionary<char, KeyTile> keyTiles;
 
+    public void Awake()
+    {
+        keyTiles = new Dictionary<char, KeyTile>();
+    }
     public static void AddKeyTile(char key, KeyTile keyTile)
     {
-        keyTiles.Add(key, keyTile);
+        if (!keyTiles.ContainsKey(key))
+        {
+            keyTiles.Add(key, keyTile);
+        }
+    }
+
+    public static void SetActive(char key)
+    {
+
     }
 }

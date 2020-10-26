@@ -42,3 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Outlinecircles
+    uniqueID: 3680937127
+    locked: 0
+  - name: Beatcircles
+    uniqueID: 1901310687
+    locked: 0

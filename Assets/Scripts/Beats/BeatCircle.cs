@@ -9,11 +9,11 @@ public class BeatCircle : MonoBehaviour
     private float shrinkSpeed;
 
     public float minRadius, maxRadius;
-    private float deltaRadius, halfRadius;
+    private float deltaRadius, thirdRadius;
 
     public static float maxDistanceToNote = 4f;
 
-    private float currentRadius;
+    public float currentRadius;
 
     private Transform target;
     private CircleRenderer circleRenderer;
@@ -24,6 +24,8 @@ public class BeatCircle : MonoBehaviour
     public byte alphaActive, alphaInactive;
     private byte currentAlpha;
 
+    private bool late = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,21 +35,29 @@ public class BeatCircle : MonoBehaviour
         color.a = currentAlpha;
         circleRenderer.SetColor(color);
         deltaRadius = maxRadius - minRadius;
-        halfRadius = deltaRadius / 2;
+        thirdRadius = deltaRadius / 4;
         currentRadius = maxRadius;
-        okRadius = minRadius + deltaRadius / 2;
+        okRadius = minRadius + thirdRadius;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float currentDistanceToNote = Vector3.Distance(transform.position, target.position);
-        currentRadius = minRadius + (currentDistanceToNote / maxDistanceToNote) * deltaRadius;
-        circleRenderer.radius = currentRadius;
-
-        Color32 color = GetColor(currentRadius);
-        color.a = currentAlpha;
-        circleRenderer.SetColor(color);
+        if (late)
+        {
+            circleRenderer.SetColor(wrong);
+            circleRenderer.radius = minRadius;
+        }
+        else
+        {
+            Vector3 targetPos = new Vector3(target.position.x, target.position.y, target.position.z);
+            float currentDistanceToNote = Vector3.Distance(transform.position, targetPos);
+            currentRadius = minRadius + (currentDistanceToNote / maxDistanceToNote) * deltaRadius;
+            circleRenderer.radius = currentRadius;
+            Color32 color = GetColor(currentRadius);
+            color.a = currentAlpha;
+            circleRenderer.SetColor(color);
+        }
     }
 
     private Color32 GetColor(float radius)
@@ -55,11 +65,16 @@ public class BeatCircle : MonoBehaviour
         float colorRatio;
         if (radius < okRadius)
         {
-            colorRatio = (radius - minRadius) / halfRadius;
+            colorRatio = (radius - minRadius) / thirdRadius;
             return Color32.Lerp(good, ok, colorRatio);
         }
-        colorRatio = (radius - okRadius) / halfRadius;
+        colorRatio = (radius - okRadius) / thirdRadius;
         return Color32.Lerp(ok, wrong, colorRatio);
+    }
+
+    public void MarkLate()
+    {
+        late = true;
     }
 
     public void SetActive()
@@ -71,4 +86,6 @@ public class BeatCircle : MonoBehaviour
     {
         this.target = target;
     }
+
+
 }
