@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BeatRecorder : MonoBehaviour
 {
@@ -34,22 +35,28 @@ public class BeatRecorder : MonoBehaviour
         {
             beat++;
         }
-        if (Input.anyKeyDown)
+
+        if (beat > 695)
         {
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                RecordToFile();
-                this.enabled = false;
-                return;
-            }
-            foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
-            {
-                if (Input.GetKeyDown(key))
-                {
-                    Record(key);
-                }
-            }
+            FeedbackManager.SendScores();
+            SceneManager.LoadScene(3);
         }
+        //if (Input.anyKeyDown)
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Return))
+        //    {
+        //        RecordToFile();
+        //        this.enabled = false;
+        //        return;
+        //    }
+        //    foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+        //    {
+        //        if (Input.GetKeyDown(key))
+        //        {
+        //            Record(key);
+        //        }
+        //    }
+        //}
     }
 
     private void Record(KeyCode key)

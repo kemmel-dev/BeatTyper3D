@@ -20,6 +20,10 @@ public class SwitchLevel : MonoBehaviour
             Application.Quit();
             return;
         }
+        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        {
+            return;
+        }
         if (Input.anyKey)
         {
             SceneManager.LoadScene(1);

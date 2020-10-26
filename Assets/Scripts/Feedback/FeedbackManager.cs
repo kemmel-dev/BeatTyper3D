@@ -27,9 +27,10 @@ public class FeedbackManager : MonoBehaviour
     private static float score = 0;
     private static float scoreAdded = 0;
     private static float multiplier = 1f;
+    private static float highestMultiplier = 1f;
 
     private static int streak = 0;
-    private static int best = 0;
+    private static int bestStreak = 0;
 
     private static AudioSource audioSource;
 
@@ -69,7 +70,7 @@ public class FeedbackManager : MonoBehaviour
                 bottomLineRenderer.endColor = defaultColor;
             }
         }
-        scoreTextMesh.text = ("Streak: " + streak + "\tScore: " + score.ToString("0") + "\t(+" + scoreAdded.ToString("0") + ")\nBest: " + best + "\tMultiplier: " + multiplier.ToString("0.00") + "x");
+        scoreTextMesh.text = ("Streak: " + streak + "\tScore: " + score.ToString("0") + "\t(+" + scoreAdded.ToString("0") + ")\nBest: " + bestStreak + "\tMultiplier: " + multiplier.ToString("0.00") + "x");
     }
 
     public static void Hit(float distanceToBeat, bool late)
@@ -130,9 +131,9 @@ public class FeedbackManager : MonoBehaviour
         feedbackTextMesh.color = wrongColor;
         feedbackTextMesh.enabled = true;
         timer = new AutoTimer(Time.time + timeWrong);
-        if (streak > best)
+        if (streak > bestStreak)
         {
-            best = streak;
+            bestStreak = streak;
         }
         streak = 0;
 
@@ -143,6 +144,12 @@ public class FeedbackManager : MonoBehaviour
         bottomLineRenderer.endColor = wrongColor;
         audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.5f);
         audioSource.Play();
+
+        if (multiplier > highestMultiplier)
+        {
+            highestMultiplier = multiplier;
+        }
+
         multiplier = 1;
     }
 
@@ -152,5 +159,18 @@ public class FeedbackManager : MonoBehaviour
         score = 0;
         multiplier = 1;
         scoreAdded = 0;
+    }
+
+    public static void SendScores()
+    {
+        if (streak > bestStreak)
+        {
+            bestStreak = streak;
+        }
+        if (multiplier > highestMultiplier)
+        {
+            highestMultiplier = multiplier;
+        }
+        Scoreboard.SetScores(streak, bestStreak, score, highestMultiplier);
     }
 }
