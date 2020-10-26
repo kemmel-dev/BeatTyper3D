@@ -30,7 +30,7 @@ public class BeatCircle : MonoBehaviour
     void Start()
     {
         circleRenderer = GetComponent<CircleRenderer>();
-        Color color = wrong;
+        Color32 color = wrong;
         currentAlpha = alphaInactive;
         color.a = currentAlpha;
         circleRenderer.SetColor(color);
