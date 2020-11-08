@@ -19,6 +19,8 @@ public class BeatRecorder : MonoBehaviour
 
     float startTime;
 
+    public int endBeat;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,27 +38,27 @@ public class BeatRecorder : MonoBehaviour
             beat++;
         }
 
-        if (beat > 695)
+        if (beat > endBeat)
         {
             FeedbackManager.SendScores();
             SceneManager.LoadScene(3);
         }
-        //if (Input.anyKeyDown)
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Return))
-        //    {
-        //        RecordToFile();
-        //        this.enabled = false;
-        //        return;
-        //    }
-        //    foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
-        //    {
-        //        if (Input.GetKeyDown(key))
-        //        {
-        //            Record(key);
-        //        }
-        //    }
-        //}
+        if (Input.anyKeyDown)
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                RecordToFile();
+                this.enabled = false;
+                return;
+            }
+            foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+            {
+                if (Input.GetKeyDown(key))
+                {
+                    Record(key);
+                }
+            }
+        }
     }
 
     private void Record(KeyCode key)

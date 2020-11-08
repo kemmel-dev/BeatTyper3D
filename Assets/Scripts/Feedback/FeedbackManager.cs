@@ -6,6 +6,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class FeedbackManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class FeedbackManager : MonoBehaviour
     private static AutoTimer timer;
     public static TextMeshPro scoreTextMesh;
     public static TextMeshPro feedbackTextMesh;
+    public static TextMeshPro missesTextMesh;
 
     private static Color defaultColor = Color.white;
     private static Color okayColor = Color.yellow;
@@ -24,10 +26,15 @@ public class FeedbackManager : MonoBehaviour
     private static float timeCorrect = 0.75f;
     private static float timeWrong = 1f;
 
+    private static int misses = 0;
+    private static int maxMisses = 5;
+
     private static float score = 0;
     private static float scoreAdded = 0;
     private static float multiplier = 1f;
     private static float highestMultiplier = 1f;
+
+    public static int totalBeats = 0;
 
     private static int streak = 0;
     private static int bestStreak = 0;
@@ -47,6 +54,7 @@ public class FeedbackManager : MonoBehaviour
     void Start()
     {
         feedbackTextMesh = transform.Find("FeedbackText").GetComponent<TextMeshPro>();
+        missesTextMesh = transform.Find("MissesText").GetComponent<TextMeshPro>();
         feedbackTextMesh.enabled = false;
         scoreTextMesh = transform.Find("ScoreText").GetComponent<TextMeshPro>();
         audioSource = GetComponentInChildren<AudioSource>();
@@ -71,6 +79,13 @@ public class FeedbackManager : MonoBehaviour
             }
         }
         scoreTextMesh.text = ("Streak: " + streak + "\tScore: " + score.ToString("0") + "\t(+" + scoreAdded.ToString("0") + ")\nBest: " + bestStreak + "\tMultiplier: " + multiplier.ToString("0.00") + "x");
+        missesTextMesh.text = "Misses: \t" + misses + "/" + maxMisses;
+
+
+        if (misses > maxMisses)
+        {
+            SceneManager.LoadScene("FailScene");
+        }
     }
 
     public static void Hit(float distanceToBeat, bool late)
@@ -98,7 +113,6 @@ public class FeedbackManager : MonoBehaviour
 
         if (late)
         {
-            Debug.Log(distanceToBeat);
             feedbackTextMesh.text = lateText;
             feedbackTextMesh.color = okayColor;
             SetLineColors(okayColor);
@@ -106,7 +120,7 @@ public class FeedbackManager : MonoBehaviour
         }
 
         feedbackTextMesh.enabled = true;
-        scoreAdded = 100 * (BeatSpawner.beatHitDistance - distanceToBeat) / BeatSpawner.beatHitDistance + 100 * perfectionReward;
+        scoreAdded = (100 + 100 * perfectionReward) * multiplier;
         score += scoreAdded;
         timer = new AutoTimer(Time.time + timeCorrect);
 
@@ -127,6 +141,7 @@ public class FeedbackManager : MonoBehaviour
 
     public static void Miss()
     {
+        misses++;
         feedbackTextMesh.text = wrong;
         feedbackTextMesh.color = wrongColor;
         feedbackTextMesh.enabled = true;
@@ -159,10 +174,13 @@ public class FeedbackManager : MonoBehaviour
         score = 0;
         multiplier = 1;
         scoreAdded = 0;
+        misses = 0;
     }
 
     public static void SendScores()
     {
+        float maxScore = GetMaxScore();
+
         if (streak > bestStreak)
         {
             bestStreak = streak;
@@ -171,6 +189,18 @@ public class FeedbackManager : MonoBehaviour
         {
             highestMultiplier = multiplier;
         }
-        Scoreboard.SetScores(streak, bestStreak, score, highestMultiplier);
+        Scoreboard.SetScores(streak, bestStreak, score, maxScore, highestMultiplier);
+    }
+
+    private static float GetMaxScore()
+    {
+        float score = 0;
+        float multiplier = 1;
+        for (int i = 0; i < totalBeats; i++)
+        {
+            score += 200 * multiplier;
+            multiplier += 0.01f;
+        }
+        return score;
     }
 }

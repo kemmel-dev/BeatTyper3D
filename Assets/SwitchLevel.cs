@@ -26,7 +26,7 @@ public class SwitchLevel : MonoBehaviour
         }
         if (Input.anyKey)
         {
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene("LevelSelect");
             return;
         }
     }

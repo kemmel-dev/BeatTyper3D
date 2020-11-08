@@ -90,17 +90,22 @@ public class BeatSpawner : MonoBehaviour
 
         Regex regex = new Regex("[A-Z]/[0-9]+");
 
+        int numBeats = 0;
+
         string line = streamReader.ReadLine();
         while (line != null)
         {
             if (regex.IsMatch(line.Trim()))
             {
                 string[] parts = line.Split('/');
-                SpawnBeat(parts[0][0], float.Parse(parts[1]) - 1 + BeatSpawner.beatHitDistance);
+                SpawnBeat(parts[0][0], float.Parse(parts[1]) + BeatSpawner.beatHitDistance);
+                numBeats++;
             }
             line = streamReader.ReadLine();
         }
         streamReader.Close();
+
+        FeedbackManager.totalBeats = numBeats;
     }
 
     public void SpawnBeat(char key, float yPos)

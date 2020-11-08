@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class BeatManager : MonoBehaviour
@@ -81,12 +82,17 @@ public class BeatManager : MonoBehaviour
     {
         if (beatPresent)
         {
-
-            Beat nextBeat = GetNextBeat();
-            nextBeat.GetKeyTile().Hide();
-            Destroy(nextBeat.GetBeatCircle().gameObject);
-            Destroy(nextBeat.gameObject);
-            RemoveFirstBeat();
+            if (BeatManager.beats.Count > 4)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    RemoveFirstBeat();
+                }
+            }
+            else
+            {
+                RemoveFirstBeat();
+            }
         }
         FeedbackManager.Miss();
     }
@@ -115,6 +121,20 @@ public class BeatManager : MonoBehaviour
 
     public static void RemoveFirstBeat()
     {
+        Beat nextBeat = GetNextBeat();
+        if (nextBeat)
+        {
+            if (nextBeat.GetKeyTile())
+            {
+                nextBeat.GetKeyTile().Hide();
+            }
+            if (nextBeat.GetBeatCircle())
+            {
+                Destroy(nextBeat.GetBeatCircle().gameObject);
+
+            }
+            Destroy(nextBeat.gameObject);
+        }
         beats.RemoveAt(0);
     }
 
