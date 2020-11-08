@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -88,9 +89,10 @@ public class BeatSpawner : MonoBehaviour
         string savesFolder = Path.Combine(assetFolder, @"..\Assets\LevelRecorder\Input\");
         StreamReader streamReader = new StreamReader(savesFolder + level + ".txt");
 
-        Regex regex = new Regex("[A-Z]/[0-9]+");
+        Regex regex = new Regex("[A-Z]/[0-9]+/*[0-9]*.*[0-9]*");
 
         int numBeats = 0;
+        float maxScoreFromHeldDown = 0;
 
         string line = streamReader.ReadLine();
         while (line != null)
@@ -98,7 +100,13 @@ public class BeatSpawner : MonoBehaviour
             if (regex.IsMatch(line.Trim()))
             {
                 string[] parts = line.Split('/');
-                SpawnBeat(parts[0][0], float.Parse(parts[1]) + BeatSpawner.beatHitDistance);
+                float holdDuration = 0;
+                if (parts.Length > 2)
+                {
+                    holdDuration = float.Parse(parts[2]);
+                    maxScoreFromHeldDown += 1000 * holdDuration;
+                }
+                SpawnBeat(parts[0][0], float.Parse(parts[1]) + BeatSpawner.beatHitDistance, holdDuration);
                 numBeats++;
             }
             line = streamReader.ReadLine();
@@ -106,13 +114,21 @@ public class BeatSpawner : MonoBehaviour
         streamReader.Close();
 
         FeedbackManager.totalBeats = numBeats;
+        FeedbackManager.maxScoreFromHeldDown = maxScoreFromHeldDown;
     }
 
-    public void SpawnBeat(char key, float yPos)
+    public void SpawnBeat(char key, float yPos, float holdDuration)
     {
         KeyTile keyTile = KeyboardManager.keyTiles[key];
         Vector3 newPos = new Vector3(keyTile.transform.position.x, yPos, keyTile.transform.position.z);
-        BeatManager.AddBeat(Instantiate(beatPrefab, newPos, Quaternion.identity, this.transform).GetComponent<Beat>());
+
+        Beat beat = Instantiate(beatPrefab, newPos, Quaternion.identity, this.transform).GetComponent<Beat>();
+        if (holdDuration > 0)
+        {
+            beat.holdable = true;
+            beat.holdDuration = holdDuration;
+        }
+        BeatManager.AddBeat(beat);
     }
 
     public void SpawnTempoBeat(float yPos)

@@ -14,7 +14,7 @@ public class KeyTile : MonoBehaviour
     public Color32 activeColorTile, inactiveColorTile, activeColorText, inactiveColorText;
 
 
-    private KeyCode keyCode;
+    public KeyCode keyCode;
     private LayerMask discoveredMask, undiscoveredMask, discoveredLayer;
     private SpriteRenderer spriteRenderer;
     private TextMeshPro textMeshPro;
@@ -46,6 +46,10 @@ public class KeyTile : MonoBehaviour
             beatPresent.gameObject.layer = discoveredLayer;
             BeatCircle beatCircle = Instantiate(beatCirclePrefab, this.transform).GetComponent<BeatCircle>();
             beatCircle.SetTarget(beatPresent.transform);
+            if (beatPresent.holdable)
+            {
+                beatCircle.holdable = true;
+            }
             beatPresent.AttachBeatCircle(beatCircle);
             beatPresent.AttachKeyTile(this);
         }

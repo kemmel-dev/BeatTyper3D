@@ -8,6 +8,8 @@ public class Beat : MonoBehaviour
     private KeyTile correspondingTile;
     private BeatCircle attachedBeatCircle;
 
+    public bool holdable;
+    public float holdDuration;
     public void Update()
     {
         if (transform.position.y < 0)

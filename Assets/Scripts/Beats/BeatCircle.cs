@@ -26,6 +26,8 @@ public class BeatCircle : MonoBehaviour
 
     private bool late = false;
 
+    public bool holdable = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,6 +64,10 @@ public class BeatCircle : MonoBehaviour
 
     private Color32 GetColor(float radius)
     {
+        if (holdable)
+        {
+            return Color.cyan;
+        }
         float colorRatio;
         if (radius < okRadius)
         {

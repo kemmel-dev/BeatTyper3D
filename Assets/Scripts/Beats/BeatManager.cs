@@ -68,6 +68,10 @@ public class BeatManager : MonoBehaviour
     public static void HitBeat(float distanceToBeat)
     {
         Beat nextBeat = GetNextBeat();
+        if (nextBeat.holdable)
+        {
+            HoldableBeatsManager.HoldDown(nextBeat.GetKeyTile().keyCode, nextBeat.holdDuration);
+        }
         nextBeat.GetKeyTile().Hide();
         bool late = nextBeat.transform.position.y < - BeatSpawner.beatHitDistance / 4;
 

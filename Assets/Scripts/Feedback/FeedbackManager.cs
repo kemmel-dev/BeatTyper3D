@@ -30,6 +30,7 @@ public class FeedbackManager : MonoBehaviour
     private static int maxMisses = 5;
 
     private static float score = 0;
+    public static float maxScoreFromHeldDown;
     private static float scoreAdded = 0;
     private static float multiplier = 1f;
     private static float highestMultiplier = 1f;
@@ -86,6 +87,16 @@ public class FeedbackManager : MonoBehaviour
         {
             SceneManager.LoadScene("FailScene");
         }
+    }
+
+    public static void HitHeldDownNote(float heldDownDuration)
+    {
+        feedbackTextMesh.text = "Nice!";
+        feedbackTextMesh.color = correctColor;
+        feedbackTextMesh.enabled = true;
+        scoreAdded = (1000) * heldDownDuration;
+        score += scoreAdded;
+        timer = new AutoTimer(Time.time + timeCorrect);
     }
 
     public static void Hit(float distanceToBeat, bool late)
@@ -194,7 +205,7 @@ public class FeedbackManager : MonoBehaviour
 
     private static float GetMaxScore()
     {
-        float score = 0;
+        float score = maxScoreFromHeldDown;
         float multiplier = 1;
         for (int i = 0; i < totalBeats; i++)
         {
