@@ -51,6 +51,8 @@ public class FeedbackManager : MonoBehaviour
     private static string lateText = "Late...";
     private static string wrong = "Oof...";
 
+    private static RockMeter rockMeter;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,6 +64,8 @@ public class FeedbackManager : MonoBehaviour
 
         topLineRenderer = GameObject.Find("Line 1").GetComponent<LineRenderer>();
         bottomLineRenderer = GameObject.Find("Line 2").GetComponent<LineRenderer>();
+
+        rockMeter = GameObject.Find("RockMeter").GetComponent<RockMeter>();
     }
 
     // Update is called once per frame
@@ -112,6 +116,7 @@ public class FeedbackManager : MonoBehaviour
             feedbackTextMesh.text = perfect;
             feedbackTextMesh.color = correctColor;
             SetLineColors(correctColor);
+            rockMeter.IncrementRockMeter();
             perfectionReward = 1f;
         }
         else
@@ -119,6 +124,7 @@ public class FeedbackManager : MonoBehaviour
             feedbackTextMesh.text = good;
             feedbackTextMesh.color = correctColor;
             SetLineColors(correctColor);
+            rockMeter.IncrementRockMeter();
             perfectionReward = 0.75f;
         }
 
@@ -152,6 +158,11 @@ public class FeedbackManager : MonoBehaviour
 
     public static void Miss()
     {
+        rockMeter.DecreaseRockMeter();
+        if (rockMeter.rockPercentage > 0)
+        {
+            return;
+        }
         misses++;
         feedbackTextMesh.text = wrong;
         feedbackTextMesh.color = wrongColor;
