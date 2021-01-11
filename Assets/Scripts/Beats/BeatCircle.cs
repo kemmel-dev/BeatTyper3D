@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class BeatCircle : MonoBehaviour
 {
-
     private float shrinkSpeed;
 
     public float minRadius, maxRadius;
@@ -17,6 +16,7 @@ public class BeatCircle : MonoBehaviour
 
     private Transform target;
     private CircleRenderer circleRenderer;
+    private TriangleRenderer triangleRenderer;
 
     public Color32 wrong, ok, good;
     private float okRadius;
@@ -31,7 +31,8 @@ public class BeatCircle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        circleRenderer = GetComponent<CircleRenderer>();
+        circleRenderer = transform.Find("CircleLine").GetComponent<CircleRenderer>();
+        triangleRenderer = transform.Find("TriangleLine").GetComponent<TriangleRenderer>();
         Color32 color = wrong;
         currentAlpha = alphaInactive;
         color.a = currentAlpha;
@@ -45,6 +46,27 @@ public class BeatCircle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (holdable)
+        {
+            circleRenderer.Hide();
+            if (late)
+            {
+                triangleRenderer.SetColor(wrong);
+                triangleRenderer.radius = minRadius;
+            }
+            else
+            {
+                Vector3 targetPos = new Vector3(target.position.x, target.position.y, target.position.z);
+                float currentDistanceToNote = Vector3.Distance(transform.position, targetPos);
+                currentRadius = minRadius + (currentDistanceToNote / maxDistanceToNote) * deltaRadius;
+                triangleRenderer.radius = currentRadius * 2.857f;
+                Color32 color = GetColor(currentRadius);
+                color.a = currentAlpha;
+                triangleRenderer.SetColor(color);
+            }
+            return;
+        }
+        triangleRenderer.Hide();
         if (late)
         {
             circleRenderer.SetColor(wrong);
@@ -60,14 +82,11 @@ public class BeatCircle : MonoBehaviour
             color.a = currentAlpha;
             circleRenderer.SetColor(color);
         }
+
     }
 
     private Color32 GetColor(float radius)
     {
-        if (holdable)
-        {
-            return Color.cyan;
-        }
         float colorRatio;
         if (radius < okRadius)
         {
