@@ -150,7 +150,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b4c673e2e40141d42973f8289961c98f, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 09dbad0b728dd7c4483046e70c0b69b0, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2829,8 +2829,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beatPrefab: {fileID: 4340650400452414363, guid: 5eb2497c21c55ff4fa204b3cd16f8a91, type: 3}
-  bpm: 130
-  level: 1
+  bpm: 160
+  level: 3
   tempoTile: {fileID: 6299491235748564641}
   tempoText: {fileID: 1610057173}
   beatMarkers:

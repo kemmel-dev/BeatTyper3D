@@ -11,6 +11,7 @@ public class MenuListener : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            KeyTile.firstBeat = true;
             BeatManager.Reset();
             BeatRecorder.beat = -1;
             BeatSpawner.beatmarkerIndex = 0;

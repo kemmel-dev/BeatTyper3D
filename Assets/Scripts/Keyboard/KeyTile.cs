@@ -19,7 +19,7 @@ public class KeyTile : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private TextMeshPro textMeshPro;
 
-    private static bool firstBeat = true;
+    public static bool firstBeat = true;
 
     private CircleRenderer circle;
 

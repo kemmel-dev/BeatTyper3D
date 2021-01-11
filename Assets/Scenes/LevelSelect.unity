@@ -862,7 +862,16 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '(HARD)
+  m_Text: '"Wind"
+
+
+    by
+
+
+    Vyacheslav Anatoleviich Koristov
+
+
+    (HARD)
 
 '
 --- !u!222 &571229370
@@ -943,16 +952,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '"Wind"
-
-
-    by
-
-
-    Vyacheslav Anatoleviich Koristov
-
-
-    (MEDIUM)
+  m_Text: '(MEDIUM)
 
 '
 --- !u!222 &676792440
