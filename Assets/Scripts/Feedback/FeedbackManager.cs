@@ -27,7 +27,7 @@ public class FeedbackManager : MonoBehaviour
     private static float timeWrong = 1f;
 
     private static int misses = 0;
-    private static int maxMisses = 5;
+    public static int maxMisses = 5;
 
     private static float score = 0;
     public static float maxScoreFromHeldDown;
@@ -66,6 +66,9 @@ public class FeedbackManager : MonoBehaviour
         bottomLineRenderer = GameObject.Find("Line 2").GetComponent<LineRenderer>();
 
         rockMeter = GameObject.Find("RockMeter").GetComponent<RockMeter>();
+
+        maxMisses = 5 + 5 * DeathCounter.numDeaths;
+        Debug.Log("Max misses: " + maxMisses);
     }
 
     // Update is called once per frame
@@ -89,6 +92,7 @@ public class FeedbackManager : MonoBehaviour
 
         if (misses > maxMisses)
         {
+            DeathCounter.AddDeath();
             SceneManager.LoadScene("FailScene");
         }
     }

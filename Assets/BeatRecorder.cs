@@ -41,6 +41,7 @@ public class BeatRecorder : MonoBehaviour
         if (beat > endBeat)
         {
             FeedbackManager.SendScores();
+            DeathCounter.ResetDeaths();
             SceneManager.LoadScene(3);
         }
         if (Input.anyKeyDown)
