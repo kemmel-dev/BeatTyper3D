@@ -727,6 +727,8 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4278779648
   rockPercentage: 0
+  progressionWeight: 0.2
+  errorWeight: 0.33
 --- !u!120 &255416772
 LineRenderer:
   m_ObjectHideFlags: 0

@@ -14,6 +14,8 @@ public class RockMeter : MonoBehaviour
     public Color32 rightColor;
 
     public float rockPercentage;
+    public float progressionWeight;
+    public float errorWeight;
 
     // Start is called before the first frame update
     void Start()
@@ -24,12 +26,12 @@ public class RockMeter : MonoBehaviour
 
     public void IncrementRockMeter()
     {
-        rockPercentage = Mathf.Clamp(rockPercentage += 0.03f, 0, 1);
+        rockPercentage = Mathf.Clamp(rockPercentage += progressionWeight, 0, 1);
     }
 
     public void DecreaseRockMeter()
     {
-        rockPercentage = Mathf.Clamp(rockPercentage -= 0.33f, 0, 1);
+        rockPercentage = Mathf.Clamp(rockPercentage -= errorWeight, 0, 1);
         if (rockPercentage < 0.01f)
         {
             rockPercentage = 0;
